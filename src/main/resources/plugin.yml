@@ -1,5 +1,5 @@
 name: BlastAndSmoke
-version: '1.01'
+version: '1.02'
 main: org.cptgummiball.blastAndSmoke.Main
 api-version: '1.21'
 prefix: BlastAndSmoke

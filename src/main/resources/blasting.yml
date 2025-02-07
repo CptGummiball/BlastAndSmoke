@@ -8,3 +8,10 @@ recipe1:
   inputCustomModelData: 123  # Optional CustomModelData for input
   outputCustomModelData: 456  # Optional CustomModelData for output
   output_amount: 4
+  output_name: "Shiny Iron Ingot"
+  enchantments:
+    - "DURABILITY,3"
+    - "EFFICIENCY,2"
+  lore:
+    - "This is a shiny ingot"
+    - "It has been smelted with care"

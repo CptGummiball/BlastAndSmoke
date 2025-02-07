@@ -30,21 +30,28 @@ Once the plugin is installed, it will create configuration files (`blasting.yml`
     - `blasting.enabled`: Whether or not the blasting feature is enabled.
     - `smoking.enabled`: Whether or not the smoking feature is enabled.
 
-- **blasting.yml**: Custom recipes for the Blast Furnace. You can add different recipes here by specifying the input material, output material, custommodeldata, cooking time, experience and output amount.
+- **blasting.yml**: Custom recipes for the Blast Furnace. You can add different recipes here by specifying the input material, output material, custommodeldata, cooking time, experience, output amount, enchantments and lore.
 
 - **smoking.yml**: Custom recipes for the Smoker. Similar to `blasting.yml`, you can define recipes for the Smoker furnace.
 
 Example structure for recipe definitions in `blasting.yml`:
 
 ```yaml
-  recipe1:
-    input: "IRON_ORE"
-    output: "IRON_INGOT"
-    cookingTime: 200
-    experience: 0.7
-    inputCustomModelData: 123  # Optional CustomModelData for input
-    outputCustomModelData: 456  # Optional CustomModelData for output
-    output_amount: 4
+recipe1:
+  input: "IRON_ORE"
+  output: "IRON_INGOT"
+  cookingTime: 200
+  experience: 0.7
+  inputCustomModelData: 123  # Optional CustomModelData for input
+  outputCustomModelData: 456  # Optional CustomModelData for output
+  output_amount: 4
+  output_name: "Shiny Iron Ingot"
+  enchantments:
+    - "DURABILITY,3"
+    - "EFFICIENCY,2"
+  lore:
+    - "This is a shiny ingot"
+    - "It has been smelted with care"
 ````
 
 ## Commands

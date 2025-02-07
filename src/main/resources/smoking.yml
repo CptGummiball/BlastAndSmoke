@@ -8,3 +8,9 @@ recipe1:
   inputCustomModelData: 789  # Optional CustomModelData for input
   outputCustomModelData: 101  # Optional CustomModelData for output
   output_amount: 4
+  output_name: "Shiny Beef"
+  enchantments:
+    - "DURABILITY,3"
+    - "EFFICIENCY,2"
+  lore:
+    - "so shiny"

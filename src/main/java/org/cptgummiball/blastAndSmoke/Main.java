@@ -6,6 +6,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
@@ -15,6 +17,8 @@ import org.bukkit.inventory.BlastingRecipe;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public final class Main extends JavaPlugin {
@@ -64,12 +68,39 @@ public final class Main extends JavaPlugin {
             float experience = (float) recipeConfig.getDouble(path + ".experience", 0.3);
             int outputAmount = recipeConfig.getInt(path + ".output_amount", 1);
 
+            // Get custom output name, if present
+            String outputName = recipeConfig.getString(path + ".output_name", null);
+
             // Get CustomModelData values, if present
             int inputCustomModelData = recipeConfig.contains(path + ".inputCustomModelData") ? recipeConfig.getInt(path + ".inputCustomModelData") : -1;
             int outputCustomModelData = recipeConfig.contains(path + ".outputCustomModelData") ? recipeConfig.getInt(path + ".outputCustomModelData") : -1;
 
+            // Get enchantments, if present
+            List<String> enchantmentsList = recipeConfig.getStringList(path + ".enchantments");
+            List<Enchantment> enchantments = new ArrayList<>();
+            List<Integer> levels = new ArrayList<>();
+            for (String enchantment : enchantmentsList) {
+                String[] parts = enchantment.split(",");
+                if (parts.length == 2) {
+                    Enchantment enchantmentType = Enchantment.getByKey(NamespacedKey.minecraft(parts[0].toUpperCase()));
+                    try {
+                        int level = Integer.parseInt(parts[1]);
+                        if (enchantmentType != null) {
+                            enchantments.add(enchantmentType);
+                            levels.add(level);
+                        }
+                    } catch (NumberFormatException e) {
+                        getLogger().warning("Invalid enchantment level in " + path + ": " + enchantment);
+                    }
+                }
+            }
+
+            // Get Lore if present
+            List<String> loreList = recipeConfig.getStringList(path + ".lore");
+            List<String> wrappedLore = wrapText(loreList, 30); // Wrap Text to 30 characters
+
             if (input != null && output != null) {
-                addBlastFurnaceRecipe(key, input, output, cookingTime, experience, outputAmount, inputCustomModelData, outputCustomModelData);
+                addBlastFurnaceRecipe(key, input, output, cookingTime, experience, outputAmount, inputCustomModelData, outputCustomModelData, outputName, enchantments, levels, wrappedLore);
             }
         }
     }
@@ -94,18 +125,45 @@ public final class Main extends JavaPlugin {
             float experience = (float) recipeConfig.getDouble(path + ".experience", 0.3);
             int outputAmount = recipeConfig.getInt(path + ".output_amount", 1);
 
+            // Get custom output name, if present
+            String outputName = recipeConfig.getString(path + ".output_name", null);
+
             // Get CustomModelData values, if present
             int inputCustomModelData = recipeConfig.contains(path + ".inputCustomModelData") ? recipeConfig.getInt(path + ".inputCustomModelData") : -1;
             int outputCustomModelData = recipeConfig.contains(path + ".outputCustomModelData") ? recipeConfig.getInt(path + ".outputCustomModelData") : -1;
 
+            // Hole die Enchantments, falls vorhanden
+            List<String> enchantmentsList = recipeConfig.getStringList(path + ".enchantments");
+            List<Enchantment> enchantments = new ArrayList<>();
+            List<Integer> levels = new ArrayList<>();
+            for (String enchantment : enchantmentsList) {
+                String[] parts = enchantment.split(",");
+                if (parts.length == 2) {
+                    Enchantment enchantmentType = Enchantment.getByKey(NamespacedKey.minecraft(parts[0].toUpperCase()));
+                    try {
+                        int level = Integer.parseInt(parts[1]);
+                        if (enchantmentType != null) {
+                            enchantments.add(enchantmentType);
+                            levels.add(level);
+                        }
+                    } catch (NumberFormatException e) {
+                        getLogger().warning("Invalid enchantment level in " + path + ": " + enchantment);
+                    }
+                }
+            }
+
+            // Get Lore if present
+            List<String> loreList = recipeConfig.getStringList(path + ".lore");
+            List<String> wrappedLore = wrapText(loreList, 30); // Wrap Text to 30 characters
+
             if (input != null && output != null) {
-                addSmokingRecipe(key, input, output, cookingTime, experience, outputAmount, inputCustomModelData, outputCustomModelData);
+                addSmokingRecipe(key, input, output, cookingTime, experience, outputAmount, inputCustomModelData, outputCustomModelData, outputName, enchantments, levels, wrappedLore);
             }
         }
     }
 
     // This method adds recipes for the Blast Furnace
-    private void addBlastFurnaceRecipe(String key, Material input, Material output, int cookingTime, float experience, int outputAmount, int inputCustomModelData, int outputCustomModelData) {
+    private void addBlastFurnaceRecipe(String key, Material input, Material output, int cookingTime, float experience, int outputAmount, int inputCustomModelData, int outputCustomModelData, String outputName, List<Enchantment> enchantments, List<Integer> levels, List<String> lore) {
         NamespacedKey recipeKey = new NamespacedKey(this, key);
 
         // Create the input ItemStack with CustomModelData if provided
@@ -118,6 +176,35 @@ public final class Main extends JavaPlugin {
         ItemStack outputItemStack = new ItemStack(output, outputAmount);
         if (outputCustomModelData != -1) {
             outputItemStack = setCustomModelData(outputItemStack, outputCustomModelData);
+        }
+
+        // add custom output name if provided
+        if (outputName != null && !outputName.isEmpty()) {
+            ItemMeta meta = outputItemStack.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(outputName);
+                outputItemStack.setItemMeta(meta);
+            }
+        }
+
+        // add enchantments if provided
+        if (!enchantments.isEmpty()) {
+            ItemMeta meta = outputItemStack.getItemMeta();
+            if (meta != null) {
+                for (int i = 0; i < enchantments.size(); i++) {
+                    meta.addEnchant(enchantments.get(i), levels.get(i), true);
+                }
+                outputItemStack.setItemMeta(meta);
+            }
+        }
+
+        // Put Lore if provided
+        if (lore != null && !lore.isEmpty()) {
+            ItemMeta meta = outputItemStack.getItemMeta();
+            if (meta != null) {
+                meta.setLore(lore);
+                outputItemStack.setItemMeta(meta);
+            }
         }
 
         // Create a MaterialChoice with the input Material (not ItemStack)
@@ -129,7 +216,7 @@ public final class Main extends JavaPlugin {
     }
 
     // This method adds recipes for the Smoker
-    private void addSmokingRecipe(String key, Material input, Material output, int cookingTime, float experience, int outputAmount, int inputCustomModelData, int outputCustomModelData) {
+    private void addSmokingRecipe(String key, Material input, Material output, int cookingTime, float experience, int outputAmount, int inputCustomModelData, int outputCustomModelData, String outputName, List<Enchantment> enchantments, List<Integer> levels, List<String> lore) {
         NamespacedKey recipeKey = new NamespacedKey(this, key);
 
         // Create the input ItemStack with CustomModelData if provided
@@ -142,6 +229,35 @@ public final class Main extends JavaPlugin {
         ItemStack outputItemStack = new ItemStack(output, outputAmount);
         if (outputCustomModelData != -1) {
             outputItemStack = setCustomModelData(outputItemStack, outputCustomModelData);
+        }
+
+        // add custom output name if provided
+        if (outputName != null && !outputName.isEmpty()) {
+            ItemMeta meta = outputItemStack.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(outputName);
+                outputItemStack.setItemMeta(meta);
+            }
+        }
+
+        // add enchantments if provided
+        if (!enchantments.isEmpty()) {
+            ItemMeta meta = outputItemStack.getItemMeta();
+            if (meta != null) {
+                for (int i = 0; i < enchantments.size(); i++) {
+                    meta.addEnchant(enchantments.get(i), levels.get(i), true);
+                }
+                outputItemStack.setItemMeta(meta);
+            }
+        }
+
+        // Put Lore if provided
+        if (lore != null && !lore.isEmpty()) {
+            ItemMeta meta = outputItemStack.getItemMeta();
+            if (meta != null) {
+                meta.setLore(lore);
+                outputItemStack.setItemMeta(meta);
+            }
         }
 
         // Create a MaterialChoice with the input Material (not ItemStack)
@@ -206,6 +322,32 @@ public final class Main extends JavaPlugin {
         if (feature.equals("smoking") && config.getBoolean("smoking.enabled")) {
             registerSmokingRecipes("smoking.yml");
         }
+    }
+
+    // Helper method to wrap texts
+    private List<String> wrapText(List<String> input, int maxLineLength) {
+        List<String> wrappedText = new ArrayList<>();
+        for (String line : input) {
+            if (line.length() <= maxLineLength) {
+                wrappedText.add(line);
+            } else {
+                StringBuilder sb = new StringBuilder();
+                String[] words = line.split(" ");
+                int lineLength = 0;
+                for (String word : words) {
+                    if (lineLength + word.length() > maxLineLength) {
+                        wrappedText.add(sb.toString());
+                        sb.setLength(0);
+                        lineLength = 0;
+                    }
+                    if (sb.length() > 0) sb.append(" ");
+                    sb.append(word);
+                    lineLength += word.length() + 1;
+                }
+                if (sb.length() > 0) wrappedText.add(sb.toString());
+            }
+        }
+        return wrappedText;
     }
 
 }

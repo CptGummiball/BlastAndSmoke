@@ -30,7 +30,7 @@ Once the plugin is installed, it will create configuration files (`blasting.yml`
     - `blasting.enabled`: Whether or not the blasting feature is enabled.
     - `smoking.enabled`: Whether or not the smoking feature is enabled.
 
-- **blasting.yml**: Custom recipes for the Blast Furnace. You can add different recipes here by specifying the input material, output material, custommodeldata, cooking time, and experience.
+- **blasting.yml**: Custom recipes for the Blast Furnace. You can add different recipes here by specifying the input material, output material, custommodeldata, cooking time, experience and output amount.
 
 - **smoking.yml**: Custom recipes for the Smoker. Similar to `blasting.yml`, you can define recipes for the Smoker furnace.
 
@@ -44,6 +44,7 @@ Example structure for recipe definitions in `blasting.yml`:
     experience: 0.7
     inputCustomModelData: 123  # Optional CustomModelData for input
     outputCustomModelData: 456  # Optional CustomModelData for output
+    output_amount: 4
 ````
 
 ## Commands

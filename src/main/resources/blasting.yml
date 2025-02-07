@@ -7,3 +7,4 @@ recipe1:
   experience: 0.7
   inputCustomModelData: 123  # Optional CustomModelData for input
   outputCustomModelData: 456  # Optional CustomModelData for output
+  output_amount: 4

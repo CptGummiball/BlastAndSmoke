@@ -62,13 +62,14 @@ public final class Main extends JavaPlugin {
             Material output = Material.matchMaterial(recipeConfig.getString(path + ".output"));
             int cookingTime = recipeConfig.getInt(path + ".cookingTime", 100);
             float experience = (float) recipeConfig.getDouble(path + ".experience", 0.3);
+            int outputAmount = recipeConfig.getInt(path + ".output_amount", 1);
 
             // Get CustomModelData values, if present
             int inputCustomModelData = recipeConfig.contains(path + ".inputCustomModelData") ? recipeConfig.getInt(path + ".inputCustomModelData") : -1;
             int outputCustomModelData = recipeConfig.contains(path + ".outputCustomModelData") ? recipeConfig.getInt(path + ".outputCustomModelData") : -1;
 
             if (input != null && output != null) {
-                addBlastFurnaceRecipe(key, input, output, cookingTime, experience, inputCustomModelData, outputCustomModelData);
+                addBlastFurnaceRecipe(key, input, output, cookingTime, experience, outputAmount, inputCustomModelData, outputCustomModelData);
             }
         }
     }
@@ -91,19 +92,20 @@ public final class Main extends JavaPlugin {
             Material output = Material.matchMaterial(recipeConfig.getString(path + ".output"));
             int cookingTime = recipeConfig.getInt(path + ".cookingTime", 100);
             float experience = (float) recipeConfig.getDouble(path + ".experience", 0.3);
+            int outputAmount = recipeConfig.getInt(path + ".output_amount", 1);
 
             // Get CustomModelData values, if present
             int inputCustomModelData = recipeConfig.contains(path + ".inputCustomModelData") ? recipeConfig.getInt(path + ".inputCustomModelData") : -1;
             int outputCustomModelData = recipeConfig.contains(path + ".outputCustomModelData") ? recipeConfig.getInt(path + ".outputCustomModelData") : -1;
 
             if (input != null && output != null) {
-                addSmokingRecipe(key, input, output, cookingTime, experience, inputCustomModelData, outputCustomModelData);
+                addSmokingRecipe(key, input, output, cookingTime, experience, outputAmount, inputCustomModelData, outputCustomModelData);
             }
         }
     }
 
     // This method adds recipes for the Blast Furnace
-    private void addBlastFurnaceRecipe(String key, Material input, Material output, int cookingTime, float experience, int inputCustomModelData, int outputCustomModelData) {
+    private void addBlastFurnaceRecipe(String key, Material input, Material output, int cookingTime, float experience, int outputAmount, int inputCustomModelData, int outputCustomModelData) {
         NamespacedKey recipeKey = new NamespacedKey(this, key);
 
         // Create the input ItemStack with CustomModelData if provided
@@ -113,7 +115,7 @@ public final class Main extends JavaPlugin {
         }
 
         // Create the output ItemStack with CustomModelData if provided
-        ItemStack outputItemStack = new ItemStack(output);
+        ItemStack outputItemStack = new ItemStack(output, outputAmount);
         if (outputCustomModelData != -1) {
             outputItemStack = setCustomModelData(outputItemStack, outputCustomModelData);
         }
@@ -127,7 +129,7 @@ public final class Main extends JavaPlugin {
     }
 
     // This method adds recipes for the Smoker
-    private void addSmokingRecipe(String key, Material input, Material output, int cookingTime, float experience, int inputCustomModelData, int outputCustomModelData) {
+    private void addSmokingRecipe(String key, Material input, Material output, int cookingTime, float experience, int outputAmount, int inputCustomModelData, int outputCustomModelData) {
         NamespacedKey recipeKey = new NamespacedKey(this, key);
 
         // Create the input ItemStack with CustomModelData if provided
@@ -137,7 +139,7 @@ public final class Main extends JavaPlugin {
         }
 
         // Create the output ItemStack with CustomModelData if provided
-        ItemStack outputItemStack = new ItemStack(output);
+        ItemStack outputItemStack = new ItemStack(output, outputAmount);
         if (outputCustomModelData != -1) {
             outputItemStack = setCustomModelData(outputItemStack, outputCustomModelData);
         }

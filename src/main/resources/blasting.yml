@@ -1,0 +1,9 @@
+# blasting.yml - Blast Furnace Recipes
+
+recipe1:
+  input: "IRON_ORE"
+  output: "IRON_INGOT"
+  cookingTime: 200
+  experience: 0.7
+  inputCustomModelData: 123  # Optional CustomModelData for input
+  outputCustomModelData: 456  # Optional CustomModelData for output

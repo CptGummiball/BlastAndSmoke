@@ -1,0 +1,9 @@
+# smoking.yml - Smoker recipes
+
+recipe1:
+  input: "BEEF"
+  output: "COOKED_BEEF"
+  cookingTime: 100
+  experience: 0.35
+  inputCustomModelData: 789  # Optional CustomModelData for input
+  outputCustomModelData: 101  # Optional CustomModelData for output

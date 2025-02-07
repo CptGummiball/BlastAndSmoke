@@ -1,0 +1,15 @@
+name: BlastAndSmoke
+version: '1.0'
+main: org.cptgummiball.blastAndSmoke.Main
+api-version: '1.21'
+prefix: BlastAndSmoke
+authors: [ cptgummiball ]
+commands:
+  bas:
+    description: Main command for Blast and Smoke plugin
+    usage: /<command> reload <blasting|smoking>
+    permission: bas.admin
+permissions:
+  bas.admin:
+    description: Allows the use of the reload command
+    default: op
